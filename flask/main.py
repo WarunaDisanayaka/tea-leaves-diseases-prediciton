@@ -1,41 +1,47 @@
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify, request, render_template
+import cv2
 import numpy as np
 import tensorflow as tf
 
-
 app = Flask(__name__)
 
-model = tf.keras.models.load_model("tea-leaves.h5")
+# Load pre-trained model
+cnn = tf.keras.models.load_model('/path/to/trained_plant_disease_model.keras')
 
+# Assuming class_name is defined previously
+# (you may need to load it from your validation_set or provide it separately)
+class_name = ["class_1", "class_2", "class_3"]  # Replace with your actual class names
 
-# Define a route for model prediction
+@app.route('/')
+def home():
+    return render_template('index.html')
+
 @app.route('/predict', methods=['POST'])
 def predict():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'})
+
     try:
-        # Get the image data from the request
-        image = request.files['image'].read()
-        img_array = tf.image.decode_image(image)
-        img_array = tf.image.resize(img_array, (256, 256))  # Adjust the size as needed
+        # Read and preprocess the image
+        img = cv2.imdecode(np.fromstring(file.read(), np.uint8), cv2.IMREAD_COLOR)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = cv2.resize(img, (128, 128))
+        img = img.reshape((1, 128, 128, 3))
 
-        # Preprocess the image
-        img_array = tf.expand_dims(img_array, 0)
-        img_array = img_array / 255.0  # Normalize pixel values to [0, 1]
+        # Make predictions
+        predictions = cnn.predict(img)
+        result_index = np.argmax(predictions)
+        disease_name = class_name[result_index]
 
-        # Make a prediction
-        predictions = model.predict(img_array)
-        predicted_class = np.argmax(predictions[0])
-        confidence = np.max(predictions[0])
-
-        # Map the class index to the class name
-        class_names = ["class1", "class2", ..., "classN"]
-        predicted_class_name = class_names[predicted_class]
-
-        # Return the prediction as JSON
-        result = {'class': predicted_class_name, 'confidence': float(confidence)}
-        return jsonify(result)
+        return jsonify({'prediction': disease_name})
 
     except Exception as e:
         return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True)
