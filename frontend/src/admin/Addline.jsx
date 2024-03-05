@@ -1,111 +1,71 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 function Addline() {
-  const [formData, setFormData] = useState({
-    productionLines: '',
-    maxSMV: '',
-    minSMV: '',
-  });
+  const [image, setImage] = useState(null);
+  const [error, setError] = useState('');
 
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+  const handleImageChange = (e) => {
+    const selectedImage = e.target.files[0];
+  
+    if (selectedImage) {
+      const allowedTypes = ['image/jpeg', 'image/png']; // Add more types if needed
+  
+      // Check if the selected file type is allowed
+      if (allowedTypes.includes(selectedImage.type)) {
+        setImage(selectedImage);
+        setError('');
+      } else {
+        setImage(null);
+        setError('Please select a valid image file (JPEG, PNG, GIF).');
+      }
+    } else {
+      setImage(null);
+      setError('Please select an image.');
+    }
   };
-
-  const [errors, setErrors] = useState({
-    productionLines: '',
-    maxSMV: '',
-    minSMV: '',
-  });
-
-  const validateForm = () => {
-    const newErrors = { ...errors };
-
-    if (!formData.productionLines) {
-      newErrors.productionLines = 'Production Lines is required';
-    }
-
-    if (!formData.maxSMV) {
-      newErrors.maxSMV = 'Max SMV is required';
-    }
-
-    if (!formData.minSMV) {
-      newErrors.minSMV = 'Min SMV is required';
-    }
-
-    setErrors(newErrors);
-    return Object.values(newErrors).every((error) => error === '');
-  };
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
+    if (image) {
+      const formData = new FormData();
+      formData.append('image', image);
+
       axios
-        .post('http://localhost:8081/addProductionLine', formData) // Update the API endpoint
+        .post('http://localhost:8081/uploadImage', formData) // Update the API endpoint
         .then((res) => {
-          if (res.data.Status === 'Success') {
-            console.log('Data submitted successfully.');
-            Swal.fire('Success', 'Data submitted successfully.', 'success').then(() => {
-            //   navigate('/users');
-              Swal.fire('Thank You', 'Your form has been submitted. You will now be redirected to the Users page.', 'info');
-            });
+          if (res.data.status === 'success') {
+            console.log('Image uploaded successfully.');
+            Swal.fire('Success', 'Image uploaded successfully.', 'success');
           } else {
-            console.log('Error:', res.data.Error);
+            console.log('Error:', res.data.error);
           }
         })
         .catch((err) => {
-          if (err.response) {
-            console.log('Server Error:', err.response.data);
-          } else {
-            console.log('An error occurred:', err.message);
-          }
+          console.log('An error occurred:', err.message);
         });
     } else {
-      console.log('Form has errors. Please check.');
+      setError('Please select an image before submitting.');
     }
   };
 
   return (
     <div className="container-fluid mt-5 add-users">
-      <h1 className="text-center">Add Production lines</h1>
+      <h1 className="text-center">Scan Diseases</h1>
       <div className="row justify-content-center">
-        <div className="col-md-10">
-          <h2>Production line details</h2>
+        <div className="col-md-6 mt-3">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Production Line</label>
-              <input type="text" className="form-control" name="productionLines" value={formData.productionLines} onChange={handleChange} />
-              {errors.productionLines && <span className="error-text">{errors.productionLines}</span>}
+              <label>Upload your image</label>
+              <input type="file" className="form-control-file" accept="image/*" onChange={handleImageChange} />
+              {error && <span className="error-text">{error}</span>}
             </div>
-            <div className="row">
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label>Max SMV</label>
-                  <input type="number" className="form-control" name="maxSMV" value={formData.maxSMV} onChange={handleChange} />
-                  {errors.maxSMV && <span className="error-text">{errors.maxSMV}</span>}
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="form-group">
-                  <label>Min SMV</label>
-                  <input type="number" className="form-control" name="minSMV" value={formData.minSMV} onChange={handleChange} />
-                  {errors.minSMV && <span className="error-text">{errors.minSMV}</span>}
-                </div>
-              </div>
-            </div>
-            <div className="mt-3 mb-4 text-right">
+            <div className="mt-3 mb-4 text-center">
               <button type="submit" className="btn btn-primary">
-                Add
+                Scan Image
               </button>
             </div>
           </form>
