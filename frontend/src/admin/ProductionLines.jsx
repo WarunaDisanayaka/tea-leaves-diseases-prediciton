@@ -10,6 +10,7 @@ import Papa from 'papaparse';
 
 function ProductionLines() {
   const [data, setData] = useState([]);
+  const [predictions, setPredictions] = useState([]); // State for prediction data
   const [selectedProductionLine, setSelectedProductionLine] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [editFormData, setEditFormData] = useState({
@@ -37,75 +38,31 @@ function ProductionLines() {
   const downloadPdf = () => {
     try {
       const pdf = new jsPDF();
+  
+      pdf.text('Prediction History Report', 10, 10);
+  
+      const headers = ['Predicted Disease', 'Remedy', 'Duration','Date & Time'];
+      const dataRows = predictions.map((prediction) => [
+        prediction['predicted_disease'],
+        prediction['remedy'],
+        prediction['duration'],
+        prediction['created_at'],
 
-      pdf.text('Census of Production Lines Report', 10, 10);
-
-      const headers = ['Production Line', 'Max SMV', 'Min SMV'];
-      const dataRows = data.map((line) => [
-        line['productionLines'],
-        line['maxSMV'],
-        line['minSMV'],
       ]);
-
+  
       pdf.autoTable({
         head: [headers],
         body: dataRows,
         startY: 20,
         margin: { top: 20 },
       });
-
-      pdf.save('production_line_data.pdf');
+  
+      pdf.save('prediction_history.pdf');
     } catch (error) {
       console.error('Error creating PDF:', error);
     }
   };
-
-  const handleShowDetails = (productionLine) => {
-    setSelectedProductionLine(productionLine);
   
-    // Populate editFormData with the selected production line's data
-    setEditFormData({
-      productionLines: productionLine.productionLines,
-      maxSMV: productionLine.maxSMV,
-      minSMV: productionLine.minSMV,
-    });
-  
-    setShowModal(true);
-  };
-  
-  const handleClose = () => {
-    setShowModal(false);
-  };
-
-  const handleEdit = () => {
-    const { id } = selectedProductionLine; // Get the id of the selected production line
-    const updatedData = editFormData; // Use the updated data from editFormData
-  
-    axios
-      .put(`http://localhost:8081/editProductionLine/${id}`, updatedData)
-      .then((res) => {
-        if (res.data.Status === 'Success') {
-          // Reload data or update state to reflect changes
-          setShowModal(false);
-          window.location.reload(true); // Reload the page to reflect the changes
-        }
-      })
-      .catch((error) => {
-        console.error('Error updating production line:', error);
-      });
-  };
-  
-
-  const handleDelete = (id) => {
-    axios
-      .delete(`http://localhost:8081/deleteProductionLine/${id}`)
-      .then((res) => {
-        if (res.data.Status === 'Success') {
-          window.location.reload(true);
-        }
-      });
-  };
-
   
   useEffect(() => {
     axios
@@ -116,109 +73,53 @@ function ProductionLines() {
         }
       })
       .catch((err) => console.log(err));
+
+      axios
+      .get('http://localhost:8081/getPredictions')
+      .then((res) => {
+        if (res.data.Status === 'Success') {
+          setPredictions(res.data.Result);
+        }
+      })
+      .catch((err) => console.log(err));
+
+
   }, []);
 
   return (
     <Container className="d-flex flex-column align-items-center add-users">
-      <h1 className="mt-5">Production Lines</h1>
-
-      <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Production Line</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Production Line</Form.Label>
-              <Form.Control
-                type="text"
-                name="productionLines"
-                value={editFormData.productionLines}
-                onChange={(e) =>
-                  setEditFormData({
-                    ...editFormData,
-                    productionLines: e.target.value,
-                  })
-                }
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Max SMV</Form.Label>
-              <Form.Control
-                type="text"
-                name="maxSMV"
-                value={editFormData.maxSMV}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, maxSMV: e.target.value })
-                }
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Min SMV</Form.Label>
-              <Form.Control
-                type="text"
-                name="minSMV"
-                value={editFormData.minSMV}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, minSMV: e.target.value })
-                }
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleEdit}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <h1 className="mt-5">Prediction History</h1>
 
       <div className="d-flex justify-content-end w-100">
-        <Link to="../addline" variant="primary" className="btn btn-primary my-3">
-          Add Production Line
-        </Link>
-        <Button variant="success" className="my-3 ms-3" onClick={downloadCsv}>
+        {/* <Button variant="success" className="my-3 ms-3" onClick={downloadCsv}>
           Download CSV
-        </Button>
+        </Button> */}
         <Button variant="success" className="my-3 ms-3" onClick={downloadPdf}>
           Download PDF
         </Button>
       </div>
 
-      <Table striped bordered hover className="mt-3">
+       <Table striped bordered hover className="mt-3">
         <thead>
           <tr>
-            <th>Production Line</th>
-            <th>Max SMV</th>
-            <th>Min SMV</th>
-            <th>Action</th>
+            <th>Predicted Disease</th>
+            <th>Remedy</th>
+            <th>Duration</th>
+            <th>Date & Time</th>
+
+            {/* Add more columns if needed */}
           </tr>
         </thead>
         <tbody>
-          {data.map((productionLine, index) => {
+          {predictions.map((prediction, index) => {
             return (
               <tr key={index}>
-                <td>{productionLine['productionLines']}</td>
-                <td>{productionLine['maxSMV']}</td>
-                <td>{productionLine['minSMV']}</td>
-                <td>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => handleShowDetails(productionLine)}
-                  >
-                    Edit
-                  </Button>
-                  <Button variant="info" size="sm" onClick={() => handleShowDetails(productionLine)}>
-                    Details
-                  </Button>
-                  <Button variant="danger" size="sm" onClick={() => handleDelete(productionLine.id)}>
-                    Delete
-                  </Button>
-                </td>
+                <td>{prediction['predicted_disease']}</td>
+                <td>{prediction['remedy']}</td>
+                <td>{prediction['duration']}</td>
+                <td>{prediction['created_at']}</td>
+
+                {/* Add more cells if needed */}
               </tr>
             );
           })}

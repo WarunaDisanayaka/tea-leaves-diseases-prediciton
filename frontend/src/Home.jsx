@@ -156,21 +156,10 @@ function LineChartFromDatabase() {
       </div>
 
       <div className="row">
-        <div className="col-md-12">
-          <h4>Select Production Line</h4>
-          {/* Dropdown to select a module */}
-          <select value={selectedModule} onChange={handleModuleChange}>
-            <option value="" disabled>Select Production Line</option>
-            {moduleOptions.map((module, index) => (
-              <option key={index} value={module}>
-                {module}
-              </option>
-            ))}
-          </select>
-        </div>
+       
       </div>
 
-      <div className="row">
+      {/* <div className="row">
         <div className="col-md-12">
           <div className="mb-4">
             <MDBContainer style={{ width: '100%', height: '500px' }}>
@@ -196,7 +185,7 @@ function LineChartFromDatabase() {
             </MDBContainer>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

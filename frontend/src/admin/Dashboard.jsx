@@ -48,10 +48,6 @@ function Admindashboard() {
                   <i class="fas fa-history"></i><span className="ms-1 d-none d-sm-inline">History</span>
                   </Link>
                </li>
-               <li>
-                  <Link to="lineprediction" className="nav-link px-0 align-middle text-white">
-                  <i className="fs-4 bi bi-bar-chart"></i> <span className="ms-1 d-none d-sm-inline">Line Prediction</span> </Link>
-               </li>
                <li onClick={handleLogout}>
                   <a href="" className="nav-link px-0 align-middle text-white">
                   <i className="fs-4 bi-power"></i> <span className="ms-1 d-none d-sm-inline">Logout</span></a>
