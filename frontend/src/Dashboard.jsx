@@ -40,7 +40,7 @@ function Dashboard() {
 							
 							<li>
 								<Link to="/lineprediction" className="nav-link px-0 align-middle text-white">
-                                <i className="fs-4 bi bi-bar-chart"></i> <span className="ms-1 d-none d-sm-inline">Line Prediction</span> </Link>
+                                <i class="fas fa-disease"></i><span className="ms-1 d-none d-sm-inline">Disease Prediction</span> </Link>
 							</li>
 							<li onClick={handleLogout}>
 								<a href="" className="nav-link px-0 align-middle text-white">

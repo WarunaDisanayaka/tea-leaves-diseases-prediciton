@@ -301,7 +301,38 @@ app.get('/api/uniqueProductTypes', (req, res) => {
   });
 });
   
+
+app.post('/savePrediction', verifyUser, (req, res) => {
+  const {predictedDisease, remedy, duration } = req.body;
+
+  const sql = "INSERT INTO predicted_diseases (predicted_disease, remedy, duration) VALUES (?, ?, ?)";
+  const values = [predictedDisease, remedy, duration];
+
+  con.query(sql, values, (err, result) => {
+    if (err) {
+      console.error('Database Error:', err);
+      return res.json({ Status: "Error", Error: "Error in Database", DatabaseError: err.message });
+    } else {
+      return res.json({ Status: "Success", Message: "Prediction data saved successfully" });
+    }
+  });
+});
   
+
+// Add a new endpoint to retrieve prediction data
+app.get('/getPredictions', verifyUser, (req, res) => {
+  const sql = "SELECT * FROM predicted_diseases"; // Adjust the query as needed
+
+  con.query(sql, (err, result) => {
+    if (err) {
+      console.error('Database Error:', err);
+      return res.json({ Status: "Error", Error: "Error in Database", DatabaseError: err.message });
+    } else {
+      return res.json({ Status: "Success", Result: result });
+    }
+  });
+});
+
 
 // Server starting
 app.listen(8081,()=>{
