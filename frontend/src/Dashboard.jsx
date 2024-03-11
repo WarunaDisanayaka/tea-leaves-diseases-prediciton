@@ -37,10 +37,13 @@ function Dashboard() {
 								<Link to="/" data-bs-toggle="collapse" className="nav-link text-white px-0 align-middle">
 									<i className="fs-4 bi-speedometer2"></i> <span className="ms-1 d-none d-sm-inline">Home</span> </Link>
 							</li>
-							
 							<li>
 								<Link to="/lineprediction" className="nav-link px-0 align-middle text-white">
                                 <i class="fas fa-disease"></i><span className="ms-1 d-none d-sm-inline">Disease Prediction</span> </Link>
+							</li>
+							<li>
+								<Link to="/contact" className="nav-link px-0 align-middle text-white">
+                                <i class="fas fa-address-book"></i><span className="ms-1 d-none d-sm-inline">Contact Us</span> </Link>
 							</li>
 							<li onClick={handleLogout}>
 								<a href="" className="nav-link px-0 align-middle text-white">

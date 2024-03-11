@@ -11,6 +11,7 @@ import Home from './Home';
 import Lineprediction from './Lineprediction';
 import Registration from './Registration';
 import ProductionLines from './admin/ProductionLines';
+import Contact from './Contact';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="home" element={<Home />} />
         <Route path="lineprediction" element={<Lineprediction />} />
+        <Route path="contact" element={<Contact />} />
       </Route>
       <Route path="admin/dashboard" element={<Admindashboard />}>
         <Route index element={<LineChartFromDatabase />} />

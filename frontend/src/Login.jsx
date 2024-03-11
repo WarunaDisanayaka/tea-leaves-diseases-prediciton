@@ -51,12 +51,25 @@ function Login() {
     console.log('Form values:', values);
   };
 
-  return (
-    <div className="centered-container">
-      <div className="container">
-        <h1 className="text-center">Tea leaves diseases</h1>
+  const inlineStyle = {
+    background: 'url("https://ceylontoday.lk/wp-content/uploads/2023/02/01-277.jpg") no-repeat center center fixed',
+    backgroundSize: 'cover',
+    fontFamily: 'Roboto, sans-serif',
+    height: '100vh',
+    overflow: 'hidden',
+  };
 
-        <div className="row justify-content-center">
+  return (
+    <div style={inlineStyle} className="centered-container">
+      <div className="container">
+        <div className="row">
+          {/* Left Side - Welcome Paragraph */}
+          <div className="col-md-6">
+            <h1>Welcome to our Tea Leaf Disease Detection System!</h1>
+            <p>This tool uses smart technology to help Sri Lanka's tea farmers quickly find out what's wrong with their tea plants. It tells them the disease, how to fix it, and how long it will take to get their plants healthy again. Our easy-to-use system is here to make tea farming better by saving crops and supporting green farming. Dive in to see how we're changing the future of tea farming with technology!</p>
+          </div>
+
+          {/* Right Side - Login Form */}
           <div className="col-md-6">
             <form onSubmit={handleSubmit}>
               <div className="form-group">

@@ -158,150 +158,6 @@ app.get('/api/data', (req, res) => {
 });
 
 
-app.post('/addProductionLine', (req, res) => {
-    const formData = req.body; 
-  
-    const sql = "INSERT INTO production_line (productionLines, maxSMV, minSMV) VALUES (?, ?, ?)";
-    const values = [formData.productionLines, formData.maxSMV, formData.minSMV];
-  
-    con.query(sql, values, (err, result) => {
-      if (err) {
-        console.error('Database Error:', err);
-        return res.json({ Status: "Error", Error: "Error in Database", DatabaseError: err.message });
-      } else {
-        return res.json({ Status: "Success", Message: "Data submitted successfully" });
-      }
-    });
-  });
-
-  app.get('/getProductionLines', (req, res) => {
-    const sql = "SELECT * FROM production_line";
-  
-    con.query(sql, (err, result) => {
-      if (err) {
-        console.error('Database Error:', err);
-        return res.json({ Status: "Error", Error: "Error in Database", DatabaseError: err.message });
-      } else {
-        return res.json({ Status: "Success", Result: result });
-      }
-    });
-  });
-  
-  
-  app.put('/editProductionLine/:id', (req, res) => {
-    const id = req.params.id;
-    const formData = req.body;
-  
-    const sql = `
-      UPDATE production_line 
-      SET 
-        productionLines=?, 
-        maxSMV=?, 
-        minSMV=?
-      WHERE id = ?`;
-  
-    const values = [
-      formData.productionLines,
-      formData.maxSMV,
-      formData.minSMV,
-      id // Place id at the end of the values array
-    ];
-  
-    con.query(sql, values, (err, result) => {
-      if (err) {
-        console.error('Database Error:', err);
-        return res.json({ Status: "Error", Error: "Error in Database", DatabaseError: err.message });
-      } else {
-        return res.json({ Status: "Success", Message: "Production line updated successfully" });
-      }
-    });
-  });
-
-  app.delete('/deleteProductionLine/:id', (req, res) => {
-    const id = req.params.id;
-  
-    const sql = "DELETE FROM production_line WHERE id = ?";
-  
-    con.query(sql, [id], (err, result) => {
-      if (err) {
-        console.error('Database Error:', err);
-        return res.json({ Status: "Error", Error: "Error in Database", DatabaseError: err.message });
-      } else {
-        return res.json({ Status: "Success", Message: "Production line deleted successfully" });
-      }
-    });
-  });
-
-//   // Define an endpoint to retrieve all unique "Product Type" values
-// app.get('/api/uniqueProductTypes', (req, res) => {
-//   const query = `
-//     SELECT DISTINCT \`Product Type\`
-//     FROM production
-//     WHERE \`Product Type\` IS NOT NULL AND \`Product Type\` <> '';
-//   `;
-
-//   con.query(query, (err, results) => {
-//     if (err) {
-//       console.error('Database Error:', err);
-//       return res.status(500).json({ Status: "Error", Error: "Error in Database", DatabaseError: err.message });
-//     } else {
-//       const uniqueProductTypes = results.map(result => result['Product Type']);
-//       return res.json({ Status: "Success", UniqueProductTypes: uniqueProductTypes });
-//     }
-//   });
-// });
-
-// Define an endpoint to retrieve all unique "Module" values
-app.get('/api/uniqueModules', (req, res) => {
-  const query = `
-    SELECT DISTINCT \`Module\`
-    FROM production
-    WHERE \`Module\` IS NOT NULL AND \`Module\` <> '';
-  `;
-
-  con.query(query, (err, results) => {
-    if (err) {
-      console.error('Database Error:', err);
-      return res.status(500).json({ Status: "Error", Error: "Error in Database", DatabaseError: err.message });
-    } else {
-      const uniqueModules = results.map(result => result['Module']);
-      return res.json({ Status: "Success", UniqueModules: uniqueModules });
-    }
-  });
-});
-
-
-// Get styles
-app.get('/getStyles', (req, res) => {
-  const sql = "SELECT * FROM style";
-
-  con.query(sql, (err, result) => {
-    if (err) {
-      console.error('Database Error:', err);
-      return res.json({ Status: "Error", Error: "Error in Database", DatabaseError: err.message });
-    } else {
-      return res.json({ Status: "Success", Result: result });
-    }
-  });
-});
-
-
-// Define an endpoint to retrieve all unique "Product Type" values
-app.get('/api/uniqueProductTypes', (req, res) => {
-  const query = `SELECT * FROM style;`;
-
-  con.query(query, (err, results) => {
-    if (err) {
-      console.error('Database Error:', err);
-      return res.status(500).json({ Status: "Error", Error: "Error in Database", DatabaseError: err.message });
-    } else {
-      const uniqueProductTypes = results.map(result => result['style']);
-      return res.json({ Status: "Success", UniqueProductTypes: uniqueProductTypes });
-    }
-  });
-});
-  
-
 app.post('/savePrediction', verifyUser, (req, res) => {
   const {predictedDisease, remedy, duration } = req.body;
 
@@ -333,6 +189,23 @@ app.get('/getPredictions', verifyUser, (req, res) => {
   });
 });
 
+
+// Contact form submission endpoint
+app.post('/contactUs',verifyUser, (req, res) => {
+  const { name, email, subject, message } = req.body;
+
+  const sql = 'INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)';
+  const values = [name, email, subject, message];
+
+  con.query(sql, values, (err, result) => {
+      if (err) {
+          console.error('Database Error:', err);
+          return res.json({ Status: 'Error', Error: 'Error in Database', DatabaseError: err.message });
+      } else {
+          return res.json({ Status: 'Success', Message: 'Your message has been sent successfully!' });
+      }
+  });
+});
 
 // Server starting
 app.listen(8081,()=>{
