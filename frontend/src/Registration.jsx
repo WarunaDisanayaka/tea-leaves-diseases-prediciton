@@ -61,7 +61,7 @@ function Registration() {
    return (
       <div className="centered-container">
          <div className="container">
-            <h1 className="text-center">PlantexMate</h1>
+            <h1 className="text-center">Tea Leaf Disease Detection </h1>
             <div className="row justify-content-center">
                <div className="col-md-6">
                   <form onSubmit={handleSubmit}>
