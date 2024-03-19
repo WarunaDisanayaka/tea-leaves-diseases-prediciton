@@ -52,7 +52,7 @@ function Login() {
   };
 
   const inlineStyle = {
-    // background: 'url("https://ceylontoday.lk/wp-content/uploads/2023/02/01-277.jpg") no-repeat center center fixed',
+    background: 'url("https://ceylontoday.lk/wp-content/uploads/2023/02/01-277.jpg") no-repeat center center fixed',
     backgroundSize: 'cover',
     fontFamily: 'Roboto, sans-serif',
     height: '100vh',
