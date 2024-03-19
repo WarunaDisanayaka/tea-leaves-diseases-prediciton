@@ -1,191 +1,153 @@
-import React, { useEffect, useState } from 'react';
-import { MDBContainer } from 'mdbreact';
-import { Line } from 'react-chartjs-2';
-import { Chart, CategoryScale, LinearScale, LineController, Title, Tooltip, Legend } from 'chart.js/auto';
-import Papa from 'papaparse';
-
-Chart.register(CategoryScale, LinearScale, LineController, Title, Tooltip, Legend);
+import React from 'react';
+import { Card, Row, Col } from 'react-bootstrap';
 
 function LineChartFromDatabase() {
-  const [selectedModule, setSelectedModule] = useState(''); // Default module
-  const [moduleOptions, setModuleOptions] = useState([]); // Module options for the dropdown
-  const [defectData, setDefectData] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: 'Defect Rate',
-        data: [],
-        fill: false,
-        borderColor: 'rgba(75, 192, 192, 1)',
-      },
-    ],
-  });
-
-  const [rejectData, setRejectData] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: 'Reject Qty',
-        data: [],
-        fill: false,
-        borderColor: 'rgba(255, 99, 71, 1)', // Red color
-      },
-    ],
-  });
-
-  const [missingData, setMissingData] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: 'Missing Qty',
-        data: [],
-        fill: false,
-        borderColor: 'rgba(255, 215, 0, 1)', // Gold color
-      },
-    ],
-  });
-
-  // Fetch the list of modules from the API
-  useEffect(() => {
-    async function fetchModuleOptions() {
-      try {
-        const response = await fetch('http://localhost:8081/api/uniqueModules'); // Replace with your server endpoint
-        if (!response.ok) {
-          throw Error('Network response was not ok');
-        }
-        const moduleData = await response.json();
-        setModuleOptions(moduleData.UniqueModules);
-      } catch (error) {
-        console.error('Error fetching module options:', error);
-      }
-    }
-
-    fetchModuleOptions();
-  }, []);
-
-  // Fetch data for the selected module
-  useEffect(() => {
-    async function fetchDataFromDatabase() {
-      try {
-        const response = await fetch('http://localhost:8081/api/data'); // Replace with your server endpoint
-        if (!response.ok) {
-          throw Error('Network response was not ok');
-        }
-        const databaseData = await response.json();
-
-        // Extract the necessary data from the response for the selected module
-        const filteredData = databaseData.filter((item) => item.Module === selectedModule);
-        const productTypes = filteredData.map((item) => item['Product Type']);
-        const defectRates = filteredData.map((item) => item['Defect Qty']);
-        const rejectQty = filteredData.map((item) => item['Reject Qty']);
-        const missingQty = filteredData.map((item) => item['Missing Qty']);
-
-        setDefectData({
-          labels: productTypes, // Use Product Types as x-axis labels
-          datasets: [
-            {
-              label: 'Defect Rate',
-              data: defectRates,
-              fill: false,
-              borderColor: 'rgba(75, 192, 192, 1)',
-            },
-          ],
-        });
-
-        setRejectData({
-          labels: productTypes, // Use Product Types as x-axis labels
-          datasets: [
-            {
-              label: 'Reject Qty',
-              data: rejectQty,
-              fill: false,
-              borderColor: 'rgba(255, 99, 71, 1)',
-            },
-          ],
-        });
-
-        setMissingData({
-          labels: productTypes, // Use Product Types as x-axis labels
-          datasets: [
-            {
-              label: 'Missing Qty',
-              data: missingQty,
-              fill: false,
-              borderColor: 'rgba(255, 215, 0, 1)',
-            },
-          ],
-        });
-      } catch (error) {
-        console.error('Error fetching data from the database:', error);
-      }
-    }
-
-    if (selectedModule) {
-      fetchDataFromDatabase();
-    }
-  }, [selectedModule]);
-
-  // Event handler for module selection
-  const handleModuleChange = (event) => {
-    setSelectedModule(event.target.value);
+  const cardStyle = {
+    marginBottom: '20px',
+    width: '100%' // Ensure cards take up full width
   };
 
-  const cardTextStyle = {
-    color: 'white', // Set the text color to white
+  const titleStyle = {
+    backgroundColor: '#007bff',
+    color: 'white',
+    padding: '10px',
+    fontWeight: 'bold'
+  };
+
+  const remedyStyle = {
+    padding: '10px'
   };
 
   return (
     <div className="container mt-4">
-      <div className="row">
-        <div className="col-md-6">
-          <div className="card text-white bg-primary mb-3">
-            <div className="card-body">
-              <h5 className="card-title">Total Lines</h5>
-              <p className="card-text" style={cardTextStyle}>10</p>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-6">
-          <div className="card text-white bg-success mb-3">
-            <div className="card-body">
-              <h5 className="card-title">Total Designs</h5>
-              <p className="card-text" style={cardTextStyle}>20</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="row">
-       
-      </div>
-
-      {/* <div className="row">
-        <div className="col-md-12">
-          <div className="mb-4">
-            <MDBContainer style={{ width: '100%', height: '500px' }}>
-              <Line data={defectData} />
-            </MDBContainer>
-          </div>
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-md-12">
-          <div className="mb-4">
-            <MDBContainer style={{ width: '100%', height: '500px' }}>
-              <Line data={rejectData} />
-            </MDBContainer>
-          </div>
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-md-12">
-          <div className="mb-4">
-            <MDBContainer style={{ width: '100%', height: '500px' }}>
-              <Line data={missingData} />
-            </MDBContainer>
-          </div>
-        </div>
-      </div> */}
+      <h1 className='text-center'>Welcome to our Tea Leaf Disease Detection System!</h1>
+      <p>This tool uses smart technology to help Sri Lanka's tea farmers quickly find out what's wrong with their tea plants. It tells them the disease, how to fix it, and how long it will take to get their plants healthy again. Our easy-to-use system is here to make tea farming better by saving crops and supporting green farming. Dive in to see how we're changing the future of tea farming with technology!</p>
+      <Row>
+        {/* Red Leaf Spots */}
+        <Col md={4}>
+          <Card style={cardStyle}>
+            <Card.Header style={titleStyle}>Red Leaf Spots</Card.Header>
+            <Card.Body style={remedyStyle}>
+              <p><strong>Remedy:</strong></p>
+              <ul>
+                <li>Isolating the infected plant from healthy plants to prevent the spread of the disease.</li>
+                <li>Remove and destroy infected leaves or parts of the plant this helps to reduce and prevent the spread of the disease.</li>
+                <li>Consult with a plant pathology expert to identify the specific pathogen causing the red leaf spots who can recommend suitable fungicides for treatment.</li>
+                <li>Apply a suitable fungicide based on the identified pathogen. Copper-based fungicides are commonly used for various fungal diseases. Follow the manufacturer's instructions for application.</li>
+                <li>Avoid overhead watering to reduce humidity around the plant.</li>
+                <li>Regularly monitor the effectiveness of the chosen remedy and make adjustments as needed.</li>
+                <li>If problems arise, please consult the nearest TRI for further advice.</li>
+              </ul>
+              <p><strong>Duration:</strong> 4 - 5 Weeks</p>
+            </Card.Body>
+          </Card>
+        </Col>
+        {/* Algal Leaf */}
+        <Col md={4}>
+          <Card style={cardStyle}>
+            <Card.Header style={titleStyle}>Algal Leaf</Card.Header>
+            <Card.Body style={remedyStyle}>
+              <p><strong>Remedy:</strong></p>
+              <ul>
+                <li>If the infection is small, gently wipe or wash the affected leaves with a damp cloth or sponge to physically remove the algae.</li>
+                <li>Mix neem oil with water and a small amount of mild soap. Spray the solution on affected areas.</li>
+                <li>Ensure that the plants receive adequate sunlight.</li>
+                <li>Mix about 1 teaspoon of baking soda in a gallon of water and apply it to the affected leaves.</li>
+                <li>Implement preventive measures, such as proper spacing of plants, good air circulation, and regular monitoring, to reduce the likelihood of algal growth.</li>
+              </ul>
+              <p><strong>Duration:</strong> 3 - 4 weeks</p>
+            </Card.Body>
+          </Card>
+        </Col>
+        {/* Bird Eye Spot */}
+        <Col md={4}>
+          <Card style={cardStyle}>
+            <Card.Header style={titleStyle}>Bird Eye Spot</Card.Header>
+            <Card.Body style={remedyStyle}>
+              <p><strong>Remedy:</strong></p>
+              <ul>
+                <li>If the fungal infection is identified, consider using fungicides recommended for the specific pathogen causing the issue.</li>
+                <li>Use organic remedies like neem oil or insecticidal soap which can be effective against pests.</li>
+                <li>Remove and destroy severely affected plant parts to prevent the spread of diseases or pests.</li>
+                <li>Regularly monitor the affected plants for any changes. Early detection allows for prompt and effective action.</li>
+              </ul>
+              <p><strong>Duration:</strong> 5-6 weeks</p>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        {/* Gray Light */}
+        <Col md={4}>
+          <Card style={cardStyle}>
+            <Card.Header style={titleStyle}>Gray Light</Card.Header>
+            <Card.Body style={remedyStyle}>
+              <p><strong>Remedy:</strong></p>
+              <ul>
+                <li>Apply fungicides that are effective against the specific fungal pathogen causing grey blight. Copper-based fungicides are commonly used for various fungal diseases.</li>
+                <li>Prune affected branches or leaves, making sure to disinfect pruning tools between cuts.</li>
+                <li>Avoid overwatering and ensure proper drainage to reduce excess moisture.</li>
+                <li>Proper spacing between plants, to improve air circulation and reduce humidity.</li>
+                <li>Sulfur-based fungicides can also be effective against certain fungal pathogens.</li>
+                <li>Copper hydroxide is another copper-based compound that can be effective against fungal diseases.</li>
+              </ul>
+              <p><strong>Duration:</strong> 3-4 weeks</p>
+            </Card.Body>
+          </Card>
+        </Col>
+        {/* White Spot */}
+        <Col md={4}>
+          <Card style={cardStyle}>
+            <Card.Header style={titleStyle}>White Spot</Card.Header>
+            <Card.Body style={remedyStyle}>
+              <p><strong>Remedy:</strong></p>
+              <ul>
+                <li>Choose a fungicide specifically formulated for tea leaf spot diseases. Copper-based fungicides or those containing ingredients like azoxystrobin and difenoconazole are often effective. Apply according to the manufacturer's recommendations.</li>
+                <li>Prune affected leaves and branches, and promptly remove and destroy any fallen leaves. This helps reduce the overall pathogen load.</li>
+                <li>Minimize moisture on the leaves, creating a less favorable environment for fungal growth.</li>
+                <li>Isolate infected plants to prevent the spread of the disease to healthy tea plants.</li>
+              </ul>
+              <p><strong>Duration:</strong> 4-6 Weeks</p>
+            </Card.Body>
+          </Card>
+        </Col>
+        {/* Anthracnose */}
+        <Col md={4}>
+          <Card style={cardStyle}>
+            <Card.Header style={titleStyle}>Anthracnose</Card.Header>
+            <Card.Body style={remedyStyle}>
+              <p><strong>Remedy:</strong></p>
+              <ul>
+                <li>Consider the use of copper nanoparticles as a fungicidal treatment. Copper nanoparticles have shown promise in effectively controlling fungal diseases, including anthracnose.</li>
+                <li>Prepare a garlic extract by blending garlic cloves with water. Strain the mixture and dilute it with water. Spray this garlic extract on the affected tea leaves. Garlic has natural antifungal properties.</li>
+                <li>Aloe vera has antifungal and antibacterial properties. Prepare a solution using aloe vera gel and water. Spray the solution on the affected leaves to help control anthracnose.</li>
+                <li>Create a solution of baking soda by mixing it with water. Baking soda has fungicidal properties and can help control the spread of anthracnose. Apply this solution to the affected areas.</li>
+              </ul>
+              <p><strong>Duration:</strong> 3-4 Weeks</p>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        {/* Brown Blight */}
+        <Col md={4}>
+          <Card style={cardStyle}>
+            <Card.Header style={titleStyle}>Brown Blight</Card.Header>
+            <Card.Body style={remedyStyle}>
+              <p><strong>Remedy:</strong></p>
+              <ul>
+                <li>Prepare a solution using green tea extract. Green tea has antioxidants and antifungal properties. Spray the solution on affected leaves to help control the brown blight.</li>
+                <li>Create a paste using turmeric powder and water. Turmeric has natural antifungal and antibacterial properties. Apply the paste to affected areas on the tea leaves.</li>
+                <li>Consider the use of copper hydroxide nanoparticles. Copper nanoparticles have demonstrated efficacy against various fungal diseases.</li>
+                <li>Mix apple cider vinegar with water (1:1 ratio) and apply as a foliar spray. Vinegar creates an acidic environment, which can be unfavorable for fungal growth.</li>
+                <li>Combine milk and cinnamon powder to create a solution. Both milk and cinnamon have antifungal properties. Spray on tea leaves affected by brown blight.</li>
+              </ul>
+              <p><strong>Duration:</strong> 2-3 weeks</p>
+            </Card.Body>
+          </Card>
+        </Col>
+        {/* Repeat the above structure for other diseases */}
+      </Row>
     </div>
   );
 }
