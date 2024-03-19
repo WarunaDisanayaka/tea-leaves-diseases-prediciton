@@ -12,6 +12,7 @@ import Lineprediction from './Lineprediction';
 import Registration from './Registration';
 import ProductionLines from './admin/ProductionLines';
 import Contact from './Contact';
+import DiseaseDetails from './DiseaseDetails';
 
 function App() {
   return (
@@ -21,13 +22,13 @@ function App() {
         <Route path="home" element={<Home />} />
         <Route path="lineprediction" element={<Lineprediction />} />
         <Route path="contact" element={<Contact />} />
+        <Route path="/disease-details/:diseaseName" element={<DiseaseDetails />} />
       </Route>
       <Route path="admin/dashboard" element={<Admindashboard />}>
         <Route index element={<LineChartFromDatabase />} />
         <Route path="lineprediction" element={<Lineprediction />} />
         <Route path="addline" element={<Addline />} />
         <Route path="all_lines" element={<ProductionLines />} />
-        
       </Route>
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Registration />} />
